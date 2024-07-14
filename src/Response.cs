@@ -18,9 +18,12 @@ class Response
             return new Response("404 Not Found");
     }
 
-    public void Post()
+    public void Post(TcpClient client)
     {
-        Console.WriteLine(string.Format("{0} {1}\r\n\r\n", HTTPServer.VERSION, status));
+        NetworkStream stream = client.GetStream();
+        StreamWriter writer = new StreamWriter(stream);
+
+        writer.WriteLine(string.Format("{0} {1}\r\n\r\n", HTTPServer.VERSION, status));
 
     }
 }

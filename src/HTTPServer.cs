@@ -46,6 +46,6 @@ class HTTPServer(int port)
 
         Request? req = Request.GetRequest(msg);
         Response? res = Response.From(req);
-        res.Post();
+        res.Post(client);
     }
 }
