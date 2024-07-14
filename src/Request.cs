@@ -3,13 +3,14 @@ class Request
     public string Method { get; set; }
     public string URL { get; set; }
     public string Host { get; set; }
-    byte[] buffer = new byte[1024];
+    public Dictionary<string, string> Header { get; set; }
 
-    private Request(string method, string url, string host)
+    private Request(string method, string url, string host, Dictionary<string, string> header)
     {
         Method = method;
         URL = url;
         Host = host;
+        Header = header;
     }
 
     public static Request? GetRequest(string request)
@@ -24,6 +25,24 @@ class Request
         string url = requestLine[1];
         string host = requestLine[2];
 
-        return new Request(method, url, host);
+        Dictionary<string, string> header = GetHeader(lines);
+
+        return new Request(method, url, host, header);
+    }
+
+    private static Dictionary<string, string> GetHeader(string[] lines)
+    {
+        Dictionary<string, string> headers = [];
+
+        foreach (var item in lines)
+        {
+            string[] line = item.Split(":");
+            if (line.Length > 1)
+            {
+                headers[line[0]] = line[1].Trim();
+            }
+        }
+
+        return headers;
     }
 }

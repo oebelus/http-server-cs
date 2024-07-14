@@ -4,7 +4,6 @@ using System.Text;
 
 class HTTPServer(int port)
 {
-    private readonly int port;
     private readonly TcpListener server = new(IPAddress.Any, port);
     bool running = false;
     public const string VERSION = "HTTP/1.1";
@@ -41,6 +40,8 @@ class HTTPServer(int port)
         byte[] buffer = new byte[1024];
         int receivedBytes = client.Receive(buffer);
         string requestString = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+
+        Console.WriteLine(requestString);
 
         Request? req = Request.GetRequest(requestString);
 

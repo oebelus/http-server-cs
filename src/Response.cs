@@ -6,13 +6,14 @@ class Response
     private string status;
     private int? contentLength;
     private string? body;
+    private string? userAgent;
 
     public Response(string status)
     {
         this.status = status;
     }
 
-    private Response(string status, int? contentLength, string? body)
+    private Response(string status, int contentLength, string body)
     {
         this.status = status;
         this.contentLength = contentLength;
@@ -21,20 +22,17 @@ class Response
 
     public static Response From(Request request)
     {
-        string[] arr = request.URL.Split("/").Where(x => x != "").ToArray();
+        string[] arr = request.URL.Split('/').Where(x => x != "").ToArray();
 
-        if (arr.Length > 1)
-        {
-            if (arr[0] == "echo")
-                return new Response("200 OK", arr[1].Length, arr[1]);
-            else
-                return new Response("404 Not Found");
-        }
-        else
-        {
-            if (arr.Length == 1) return new Response("404 Not Found");
-            else return new Response("200 OK");
-        }
+        string path = request.URL;
+
+        if (path.StartsWith("/echo")) return new Response("200 OK", arr[1].Length, arr[1]);
+
+        else if (path.StartsWith("/user-agent")) return new Response("200 OK", request.Header["User-Agent"].Length, request.Header["User-Agent"]);
+
+        else if (path == "/") return new Response("200 OK");
+
+        else return new Response("404 Not Found");
     }
 
     public void Post(Socket client)
