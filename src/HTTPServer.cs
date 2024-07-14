@@ -10,26 +10,29 @@ class HTTPServer(int port)
 
     public void Start()
     {
-        while (true)
-        {
-            Thread serverThread = new(new ThreadStart(Run));
-            serverThread.Start();
-        }
+        Thread serverThread = new(new ThreadStart(Run));
+        serverThread.Start();
     }
 
     private void Run()
     {
+        running = true;
         server.Start();
-        Console.WriteLine("Waiting for connection...");
 
-        Socket client = server.AcceptSocket();
+        while (running)
+        {
+            Console.WriteLine("Waiting for connection...");
 
-        Console.WriteLine("Client connected!");
+            Socket client = server.AcceptSocket();
 
-        HandleClient(client);
+            Console.WriteLine("Client connected!");
 
-        client.Close();
+            HandleClient(client);
 
+            client.Close();
+        }
+
+        server.Stop();
     }
 
     private static void HandleClient(Socket client)
