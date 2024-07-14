@@ -34,10 +34,9 @@ class Response
         else if (path.StartsWith("/files"))
         {
             string dir = request.Directory + path[7..];
-            string content = Utils.ReadFile(dir);
 
-            if (File.Exists(path))
-                return new Response("200 OK", "application/octet-stream", File.ReadAllText(path).Length, File.ReadAllText(path));
+            if (File.Exists(dir))
+                return new Response("200 OK", "application/octet-stream", File.ReadAllText(dir).Length, File.ReadAllText(dir));
             else
                 return new Response("404 Not Found");
 
