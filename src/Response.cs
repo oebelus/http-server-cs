@@ -31,7 +31,7 @@ class Response
         {
             if (request.Header.TryGetValue("Accept-Encoding", out string? value))
             {
-                if (value == "gzip")
+                if (value.Contains("gzip"))
                     return new Response("200 OK", "text/plain\r\nContent-Encoding: gzip", arr[1].Length, arr[1]);
                 else return new Response("200 OK", "text/plain", arr[1].Length, arr[1]);
             }
