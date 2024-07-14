@@ -19,23 +19,17 @@ class HTTPServer(int port)
 
     private void Run()
     {
-        running = true;
         server.Start();
+        Console.WriteLine("Waiting for connection...");
 
-        while (running)
-        {
-            Console.WriteLine("Waiting for connection...");
+        Socket client = server.AcceptSocket();
 
-            Socket client = server.AcceptSocket();
+        Console.WriteLine("Client connected!");
 
-            Console.WriteLine("Client connected!");
+        HandleClient(client);
 
-            HandleClient(client);
+        client.Close();
 
-            client.Close();
-        }
-
-        server.Stop();
     }
 
     private static void HandleClient(Socket client)
