@@ -35,8 +35,18 @@ class Response
         {
             string dir = request.Directory + path[7..];
 
-            if (File.Exists(dir))
-                return new Response("200 OK", "application/octet-stream", File.ReadAllText(dir).Length, File.ReadAllText(dir));
+            if (request.Method == "GET")
+            {
+                if (File.Exists(dir))
+                    return new Response("200 OK", "application/octet-stream", File.ReadAllText(dir).Length, File.ReadAllText(dir));
+                else return new Response("404 Not Found");
+            }
+            else if (request.Method == "POST")
+            {
+                File.WriteAllText(dir, request.Body);
+                return new Response("201 Created");
+            }
+
             else
                 return new Response("404 Not Found");
 
@@ -52,10 +62,13 @@ class Response
         string res;
 
         if (contentLength == null)
+        {
+            Console.WriteLine("i am here");
             res = string.Format("{0} {1}\r\n\r\n", HTTPServer.VERSION, status);
+        }
         else
             res = string.Format("{0} {1}\r\nContent-Type: {2}\r\nContent-Length: {3}\r\n\r\n{4}", HTTPServer.VERSION, status, contentType, contentLength.ToString(), body);
 
-        client.Send(ASCIIEncoding.UTF8.GetBytes(res));
+        client.Send(Encoding.UTF8.GetBytes(res));
     }
 }
