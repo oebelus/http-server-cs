@@ -19,14 +19,18 @@ class HTTPServer(int port)
         running = true;
         server.Start();
 
-        Console.WriteLine("Waiting for connection...");
+        while (running)
+        {
+            Console.WriteLine("Waiting for connection...");
 
-        TcpClient client = server.AcceptTcpClient();
+            TcpClient client = server.AcceptTcpClient();
 
-        Console.WriteLine("Client connected!");
+            Console.WriteLine("Client connected!");
 
-        HandleClient(client);
-        client.Close();
+            HandleClient(client);
+
+            client.Close();
+        }
 
         server.Stop();
     }
@@ -39,7 +43,9 @@ class HTTPServer(int port)
 
         while (reader.Peek() != -1)
         {
-            msg += reader.ReadLine() + "\n";
+            string line = reader.ReadLine();
+            if (line == null) break;
+            msg += line + "\n";
         }
 
         Console.WriteLine("Request: \n" + msg);
