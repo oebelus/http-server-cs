@@ -27,7 +27,16 @@ class Response
 
         string path = request.URL;
 
-        if (path.StartsWith("/echo")) return new Response("200 OK", "text/plain", arr[1].Length, arr[1]);
+        if (path.StartsWith("/echo"))
+        {
+            if (request.Header.TryGetValue("Accept-Encoding", out string? value))
+            {
+                if (value == "gzip")
+                    return new Response("200 OK", "text/plain\r\nContent-Encoding: gzip", arr[1].Length, arr[1]);
+                else return new Response("200 OK", "text/plain", arr[1].Length, arr[1]);
+            }
+            else return new Response("200 OK", "text/plain", arr[1].Length, arr[1]);
+        }
 
         else if (path.StartsWith("/user-agent")) return new Response("200 OK", "text/plain", request.Header["User-Agent"].Length, request.Header["User-Agent"]);
 
