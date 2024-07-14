@@ -5,19 +5,24 @@ using System.Text;
 class HTTPServer(int port)
 {
     private readonly TcpListener server = new(IPAddress.Any, port);
+    bool running = false;
     public const string VERSION = "HTTP/1.1";
 
     public void Start()
     {
-        Thread serverThread = new(new ThreadStart(Run));
-        serverThread.Start();
+        while (true)
+        {
+            Thread serverThread = new(new ThreadStart(Run));
+            serverThread.Start();
+        }
     }
 
     private void Run()
     {
+        running = true;
         server.Start();
 
-        for (; ; )
+        while (running)
         {
             Console.WriteLine("Waiting for connection...");
 
@@ -29,6 +34,8 @@ class HTTPServer(int port)
 
             client.Close();
         }
+
+        server.Stop();
     }
 
     private static void HandleClient(Socket client)
