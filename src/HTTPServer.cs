@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-class HTTPServer(int port)
+class HTTPServer(int port, string directory)
 {
-    private readonly TcpListener server = new(IPAddress.Any, port);
-    bool running = false;
+    private readonly TcpListener server = new TcpListener(IPAddress.Any, port);
     public const string VERSION = "HTTP/1.1";
+    private readonly string directory = directory;
 
     public void Start()
     {
@@ -18,7 +18,7 @@ class HTTPServer(int port)
         }
     }
 
-    private static void HandleClient(Socket client)
+    private void HandleClient(Socket client)
     {
         byte[] buffer = new byte[1024];
         int receivedBytes = client.Receive(buffer);
@@ -26,9 +26,9 @@ class HTTPServer(int port)
 
         Console.WriteLine(requestString);
 
-        Request? req = Request.GetRequest(requestString);
+        Request? req = Request.GetRequest(requestString, directory);
 
-        Response? res = Response.From(req);
+        Response? res = Response.From(req!);
         res.Post(client);
     }
 }
