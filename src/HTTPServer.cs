@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 class HTTPServer(int port)
 {
@@ -23,7 +24,7 @@ class HTTPServer(int port)
         {
             Console.WriteLine("Waiting for connection...");
 
-            TcpClient client = server.AcceptTcpClient();
+            Socket client = server.AcceptSocket();
 
             Console.WriteLine("Client connected!");
 
@@ -35,22 +36,16 @@ class HTTPServer(int port)
         server.Stop();
     }
 
-    private static void HandleClient(TcpClient client)
+    private static void HandleClient(Socket client)
     {
-        StreamReader reader = new(client.GetStream());
+        byte[] buffer = new byte[1024];
+        int receivedBytes = client.Receive(buffer);
+        string requestString = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
 
-        string msg = "";
+        Request? req = Request.GetRequest(requestString);
 
-        while (reader.Peek() != -1)
-        {
-            string line = reader.ReadLine();
-            if (line == null) break;
-            msg += line + "\n";
-        }
+        Console.WriteLine("Request: \n" + req);
 
-        Console.WriteLine("Request: \n" + msg);
-
-        Request? req = Request.GetRequest(msg);
         Response? res = Response.From(req);
         res.Post(client);
     }

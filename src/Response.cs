@@ -1,8 +1,8 @@
 using System.Net.Sockets;
+using System.Text;
 
 class Response
 {
-    private byte[]? data = null;
     private string status;
 
     private Response(string status)
@@ -18,12 +18,11 @@ class Response
             return new Response("404 Not Found");
     }
 
-    public void Post(TcpClient client)
+    public void Post(Socket client)
     {
-        NetworkStream stream = client.GetStream();
-        StreamWriter writer = new StreamWriter(stream);
+        string res = string.Format("{0} {1}\r\n\r\n", HTTPServer.VERSION, status);
 
-        writer.WriteLine(string.Format("{0} {1}\r\n\r\n", HTTPServer.VERSION, status));
+        client.Send(ASCIIEncoding.UTF8.GetBytes(res));
 
     }
 }
