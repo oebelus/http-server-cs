@@ -31,7 +31,10 @@ class Response
                 return new Response("404 Not Found");
         }
         else
-            return new Response("200 OK");
+        {
+            if (arr.Length == 1) return new Response("404 Not Found");
+            else return new Response("200 OK");
+        }
     }
 
     public void Post(Socket client)
